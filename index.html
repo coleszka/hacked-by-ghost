@@ -11,7 +11,7 @@
 <body>
 <button onclick="hacked()">Click me</button>
 <p>Image:</p>
-<img id="img" src="problem.png">
+<img id="img" src="portret.png">
 <p>Canvas:</p>
 <canvas id="myCanvas" height="1" width="1" style="border: 1px solid white; "></canvas><br>
 <pre id="text" style="border: 1px solid white; line-height: 100%; letter-spacing: 3px"></pre>
@@ -77,7 +77,7 @@
                 randomChar = String.fromCharCode(Math.floor(Math.random() * (+126 - +33)) + +33);
                 charImage.push(randomChar);
                 asciiStr += randomChar;
-                lenCharAnimation.push(Math.floor(Math.random() * (20 - 1)) + 1);
+                lenCharAnimation.push(Math.floor(Math.random() * (10 - 1)) + 1);
             }
             else {
                 charImage.push(" ");
@@ -112,11 +112,13 @@
         //przygotowanie pustej tablicy odwzorowanego obrazu
         var listCharIndex = Array();
         var animationArr = Array();
+        var lenCharAnimation = Array();
         for (var x = 0; x <= returnArr[0].length; x++){
             if (returnArr[0][x] !== "\n"){
                 animationArr.push(" ");
                 if (returnArr[0][x] !== " "){
                     listCharIndex.push(x);
+                    lenCharAnimation.push(Math.floor(Math.random() * (10 - 1)) + 1);
                     //console.log(x);
                 }
             }
@@ -127,20 +129,60 @@
         }
         //console.log(asciiStr.join(""));
         // console.log(returnArr[0][150]);
-        // console.log(animationArr);
+        console.log(lenCharAnimation);
 
-
+        var arrAnimating = Array();
+        var constantAnimatedChars = Array();
         var temp = 0;
-        var id = setInterval(animation, 10);
+        var id = setInterval(animation, 50);
         function animation(){
 
                 for (var y = 0; y < 20; y++){
-                    randChar = Math.floor(Math.random() * (+listCharIndex.length - +0)) + +0;
-                    animationArr[listCharIndex[randChar]] = returnArr[0][listCharIndex[randChar]];
-                    //returnArr[0].splice(listCharIndex[randChar], 1);
-                    listCharIndex.splice(randChar, 1);
+                    if (constantAnimatedChars.length < 100){
 
-                    //console.log("wylosowano: "+randChar+", podmieniono: "+ animationArr[randChar])
+                        randChar = Math.floor(Math.random() * (+listCharIndex.length - +0)) + +0;
+                        constantAnimatedChars.push(randChar);
+                        if (lenCharAnimation[randChar] > 0){
+                            animationArr[listCharIndex[randChar]] = String.fromCharCode(Math.floor(Math.random() * (+126 - +33)) + +33);
+                            lenCharAnimation[randChar]--;
+                        }
+                        else {
+                            animationArr[listCharIndex[randChar]] = returnArr[0][listCharIndex[randChar]];
+                            listCharIndex.splice(randChar, 1);
+                            lenCharAnimation.splice(randChar, 1);
+                            constantAnimatedChars.splice(randChar, 1);
+                        }
+
+                    }
+                    else {
+                        randChar = Math.floor(Math.random() * (+constantAnimatedChars.length - +0)) + +0;
+
+                        if (lenCharAnimation[constantAnimatedChars[randChar]] > 0){
+                            animationArr[listCharIndex[constantAnimatedChars[randChar]]] = String.fromCharCode(Math.floor(Math.random() * (+126 - +33)) + +33);
+                            lenCharAnimation[constantAnimatedChars[randChar]]--;
+                        }
+                        else {
+                            animationArr[listCharIndex[constantAnimatedChars[randChar]]] = returnArr[0][listCharIndex[constantAnimatedChars[randChar]]];
+                            listCharIndex.splice(constantAnimatedChars[randChar], 1);
+                            lenCharAnimation.splice(constantAnimatedChars[randChar], 1);
+                            constantAnimatedChars.splice(randChar, 1);
+                        }
+                    }
+
+
+                    // randChar = Math.floor(Math.random() * (+listCharIndex.length - +0)) + +0;
+                    // constantAnimatedChars.push(randChar);
+                    // if (lenCharAnimation[randChar] > 0){
+                    //     animationArr[listCharIndex[randChar]] = String.fromCharCode(Math.floor(Math.random() * (+126 - +33)) + +33);
+                    //     lenCharAnimation[randChar]--;
+                    // }
+                    // else {
+                    //     animationArr[listCharIndex[randChar]] = returnArr[0][listCharIndex[randChar]];
+                    //     listCharIndex.splice(randChar, 1);
+                    //     lenCharAnimation.splice(randChar, 1);
+                    // }
+
+                    console.log("wylosowano: "+randChar+", podmieniono: "+ returnArr[0][listCharIndex[randChar]]+" ile losowanych liczb: "+constantAnimatedChars.length)
                 }
                 text.innerText = animationArr.join("");
                 console.log(i+" - length: "+listCharIndex.length);
