@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body {background-color: black;
+            color: white;}
+    </style>
+</head>
+<body>
+<button onclick="hacked()">Click me</button>
+<p>Image:</p>
+<img id="img" src="problem.png">
+<p>Canvas:</p>
+<canvas id="myCanvas" height="1" width="1" style="border: 1px solid white; "></canvas><br>
+<pre id="text" style="border: 1px solid white; line-height: 100%; letter-spacing: 3px"></pre>
+<script>
+
+
+
+
+    function imageToChars(){
+
+        var text = document.getElementById("text");
+        text.innerText = "";
+        var asciiStr = "";
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        var img = document.getElementById("img");
+        var randomChar;
+        c.width = img.clientWidth;
+        c.height = img.clientHeight;
+        ctx.drawImage(img, 0, 0, img.clientWidth, img.clientHeight);
+
+        var imgData = ctx.getImageData(0, 0, c.width, c.height);
+
+        charImage = new Array();
+        lenCharAnimation = new Array();
+
+        for (var i = 0; i < imgData.data.length; i += 4) {
+
+            // Get the pixel of the red channel.
+            r = imgData.data[i]
+            // Get the pixel of the green channel.
+            g = imgData.data[i+1]
+            // Get the pixel of the blue channel.
+            b = imgData.data[i+2]
+            // Get the pixel of the alpha channel.
+            a = imgData.data[i+3]
+            // Transform RGB color space to gray scale.
+            gray =  (0.299 * r + 0.587 * g + 0.114 * b)
+
+            if ( gray > 120 )
+            {
+                // Set the pixel is white.
+                imgData.data[i] = 255;
+                imgData.data[i+1] = 255;
+                imgData.data[i+2] = 255;
+                imgData.data[i+3] = a;
+            }
+            else
+            {
+                // Set the pixel is black.
+                imgData.data[i] = 0;
+                imgData.data[i+1] = 0;
+                imgData.data[i+2] = 0;
+                imgData.data[i+3] = a;
+            }
+
+            if (i%(img.clientWidth*4)==0 && i > 0){
+                asciiStr += "\n";
+                charImage.push("\n");
+                lenCharAnimation.push(0);
+            }
+            if (imgData.data[i] > 250 && imgData.data[i+1] > 250 && imgData.data[i+2] > 250){
+                randomChar = String.fromCharCode(Math.floor(Math.random() * (+126 - +33)) + +33);
+                charImage.push(randomChar);
+                asciiStr += randomChar;
+                lenCharAnimation.push(Math.floor(Math.random() * (20 - 1)) + 1);
+            }
+            else {
+                charImage.push(" ");
+                lenCharAnimation.push(0);
+                asciiStr += " ";
+            }
+
+        }
+
+        // for (var x = 0; x < 30; x++){
+        //
+        //     setTimeout(function(){ text.innerText += asciiStr; }, 1000*x);
+        //
+        // }
+
+
+
+        // text.innerText = asciiStr;
+        ctx.putImageData(imgData, 0, 0);
+
+        return [charImage, lenCharAnimation];
+    }
+
+    function hacked() {
+        var returnArr = imageToChars();
+        var complete = false;
+        var i = 0;
+        var j = 0;
+        var randChar;
+        //var animationArr = Array(returnArr[0].length).fill(" ");
+
+        //przygotowanie pustej tablicy odwzorowanego obrazu
+        var listCharIndex = Array();
+        var animationArr = Array();
+        for (var x = 0; x <= returnArr[0].length; x++){
+            if (returnArr[0][x] !== "\n"){
+                animationArr.push(" ");
+                if (returnArr[0][x] !== " "){
+                    listCharIndex.push(x);
+                    //console.log(x);
+                }
+            }
+            else {
+                animationArr.push(returnArr[0][x]);
+                // console.log(x);
+            }
+        }
+        //console.log(asciiStr.join(""));
+        // console.log(returnArr[0][150]);
+        // console.log(animationArr);
+
+
+        var temp = 0;
+        var id = setInterval(animation, 10);
+        function animation(){
+
+                for (var y = 0; y < 20; y++){
+                    randChar = Math.floor(Math.random() * (+listCharIndex.length - +0)) + +0;
+                    animationArr[listCharIndex[randChar]] = returnArr[0][listCharIndex[randChar]];
+                    //returnArr[0].splice(listCharIndex[randChar], 1);
+                    listCharIndex.splice(randChar, 1);
+
+                    //console.log("wylosowano: "+randChar+", podmieniono: "+ animationArr[randChar])
+                }
+                text.innerText = animationArr.join("");
+                console.log(i+" - length: "+listCharIndex.length);
+                i++;
+                if (listCharIndex.length === 0) {
+                    clearInterval(id);
+                }
+                //return listCharIndex.length;
+        };
+
+
+    }
+
+
+</script>
+
+
+
+</body>
+</html>
