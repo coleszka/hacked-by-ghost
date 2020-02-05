@@ -9,16 +9,56 @@
     </style>
 </head>
 <body>
-<button onclick="hacked()">Click me</button>
-<p>Image:</p>
-<img id="img" src="portret.png">
-<p>Canvas:</p>
-<canvas id="myCanvas" height="1" width="1" style="border: 1px solid white; "></canvas><br>
-<pre id="text" style="border: 1px solid white; line-height: 100%; letter-spacing: 3px"></pre>
+
+<input type="file" id="inp"><br>
+<p>Source Image:</p>
+<canvas id="sourceImg"></canvas>
+<!--<img id="img" src="images/problem.png">-->
+<p>Threshold:</p>
+<canvas id="myCanvas" height="1" width="1"></canvas>
+<br>
+<p>Animation:</p>
+<pre id="text" style=" line-height: 100%; letter-spacing: 3px; font-size: 6px"></pre>
 <script>
 
 
+    document.getElementById('inp').onchange = function(e) {
+        var img = new Image();
+        img.onload = draw;
+        img.onerror = failed;
+        img.src = URL.createObjectURL(this.files[0]);
+    };
+    function draw() {
+        var canvas = document.getElementById('sourceImg');
+        canvas.width = this.width;
+        canvas.height = this.height;
 
+        var MAX_WIDTH = 150;
+        var MAX_HEIGHT = 150;
+        var width = this.width;
+        var height = this.height;
+
+        if (width > height) {
+            if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+            }
+        } else {
+            if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+            }
+        }
+        canvas.width = width;
+        canvas.height = height;
+
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(this, 0,0, width, height);
+        hacked();
+    }
+    function failed() {
+        console.error("The provided file couldn't be loaded as an Image media");
+    }
 
     function imageToChars(){
 
@@ -27,7 +67,7 @@
         var asciiStr = "";
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
-        var img = document.getElementById("img");
+        var img = document.getElementById("sourceImg");
         var randomChar;
         c.width = img.clientWidth;
         c.height = img.clientHeight;
@@ -84,16 +124,8 @@
                 lenCharAnimation.push(0);
                 asciiStr += " ";
             }
-
+        console.log(i);
         }
-
-        // for (var x = 0; x < 30; x++){
-        //
-        //     setTimeout(function(){ text.innerText += asciiStr; }, 1000*x);
-        //
-        // }
-
-
 
         // text.innerText = asciiStr;
         ctx.putImageData(imgData, 0, 0);
@@ -107,7 +139,6 @@
         var i = 0;
         var j = 0;
         var randChar;
-        //var animationArr = Array(returnArr[0].length).fill(" ");
 
         //przygotowanie pustej tablicy odwzorowanego obrazu
         var listCharIndex = Array();
@@ -124,12 +155,12 @@
             }
             else {
                 animationArr.push(returnArr[0][x]);
-                // console.log(x);
+                 console.log(x);
             }
         }
         //console.log(asciiStr.join(""));
-        // console.log(returnArr[0][150]);
-        console.log(lenCharAnimation);
+        //console.log(returnArr[0][150]);
+        //console.log(lenCharAnimation);
 
         var arrAnimating = Array();
         var constantAnimatedChars = Array();
@@ -168,21 +199,6 @@
                             constantAnimatedChars.splice(randChar, 1);
                         }
                     }
-
-
-                    // randChar = Math.floor(Math.random() * (+listCharIndex.length - +0)) + +0;
-                    // constantAnimatedChars.push(randChar);
-                    // if (lenCharAnimation[randChar] > 0){
-                    //     animationArr[listCharIndex[randChar]] = String.fromCharCode(Math.floor(Math.random() * (+126 - +33)) + +33);
-                    //     lenCharAnimation[randChar]--;
-                    // }
-                    // else {
-                    //     animationArr[listCharIndex[randChar]] = returnArr[0][listCharIndex[randChar]];
-                    //     listCharIndex.splice(randChar, 1);
-                    //     lenCharAnimation.splice(randChar, 1);
-                    // }
-
-                    console.log("wylosowano: "+randChar+", podmieniono: "+ returnArr[0][listCharIndex[randChar]]+" ile losowanych liczb: "+constantAnimatedChars.length)
                 }
                 text.innerText = animationArr.join("");
                 console.log(i+" - length: "+listCharIndex.length);
@@ -191,15 +207,11 @@
                     clearInterval(id);
                 }
                 //return listCharIndex.length;
-        };
-
-
+        }
+        console.log('flaga'+i);
     }
 
 
 </script>
-
-
-
 </body>
 </html>
